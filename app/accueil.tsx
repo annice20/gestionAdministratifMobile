@@ -1,23 +1,21 @@
-import { useRouter } from 'expo-router';
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const image = require("../assets/images/1.png");
 
 export default function Index() {
-  const router = useRouter();
   return (
     <SafeAreaView style={styles.fullScreen}>
       <ImageBackground source={image} style={styles.background}>
         <View style={styles.container}>
-          <Text style={styles.intro}>Bienvenue dans la communauté !
-          {"\n"}Nous sommes ravis de vous partager une facilité quotidienne</Text>
-          <Text style={styles.intro}>Rejoignez-nous !</Text>
+          <Text style={styles.intro}>Bienvenue chez E -Taratasy !</Text>
+          <Text style={styles.intro}>Fini les files d’attente et les démarches compliquées ! 
+            Notre plateforme vous permet de déposer, suivre et finaliser vos demandes administratives en ligne, rapidement en toute sécurité, où que vous soyez.</Text>
           <TouchableOpacity style={styles.inscription}>
             <Text style={styles.textbtn}>S’inscrire</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.connexion}>
-            <Text style={styles.textbtn} onPress={() => router.navigate('/login')}>Se connecter</Text>
+            <Text style={styles.textbtn}>Se connecter</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
