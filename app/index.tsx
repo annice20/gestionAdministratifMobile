@@ -14,7 +14,7 @@ export default function Index() {
           {"\n"}Nous sommes ravis de vous partager une facilité quotidienne</Text>
           <Text style={styles.intro}>Rejoignez-nous !</Text>
           <TouchableOpacity style={styles.inscription}>
-            <Text style={styles.textbtn}>S’inscrire</Text>
+            <Text style={styles.textbtn} onPress={() => router.navigate('/inscription')}>S’inscrire</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.connexion}>
             <Text style={styles.textbtn} onPress={() => router.navigate('/login')}>Se connecter</Text>
