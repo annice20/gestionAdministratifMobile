@@ -19,7 +19,7 @@ export default function Inscription() {
   const [date, setDate] = useState<Date | null>(null);
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [step, setStep] = useState(1); // étape active
-  const [isRegistered, setIsRegistered] = useState(false); // contrôle après inscription
+  const [isRegistered, setIsRegistered] = useState(false); // après inscription
 
   const showDatePicker = () => setDatePickerVisible(true);
   const hideDatePicker = () => setDatePickerVisible(false);
@@ -112,7 +112,7 @@ export default function Inscription() {
                   <Text style={styles.buttonText}>S'inscrire</Text>
                 </TouchableOpacity>
 
-                {/* Bouton Suivant (affiché uniquement après inscription) */}
+                {/* Bouton Suivant (apparaît après inscription) */}
                 {isRegistered && (
                   <TouchableOpacity
                     style={styles.buttonBlue}
@@ -150,21 +150,21 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   formContainer: {
-    width: "80%",
-    backgroundColor: "#696664ff",
+    width: "70%",
+    backgroundColor: "#4A4A4A", // fond plus sombre comme sur ton image
     borderRadius: 10,
     padding: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    color: "#fff",
     marginBottom: 20,
     textAlign: "center",
   },
   inputGroup: { width: "100%" },
   input: {
-    height: 40,
+    height: 45,
     backgroundColor: "#fff",
     borderRadius: 5,
     paddingHorizontal: 10,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingHorizontal: 10,
   },
-  inputWithIconField: { flex: 1, height: 40 },
+  inputWithIconField: { flex: 1, height: 45 },
   icon: { marginLeft: 8 },
   pickerContainer: {
     backgroundColor: "#fff",
@@ -190,14 +190,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     marginBottom: 15,
+    paddingHorizontal: 5,
   },
-  picker: { height: 40, width: "100%" },
+  picker: {
+    width: "100%",
+    paddingVertical: 10, // espace interne pour bien afficher le texte
+  },
   buttonBlue: {
     backgroundColor: "#4E74B0",
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 10,
-    width: "45%",
+    width: "100%",
     alignItems: "center",
   },
   buttonGreen: {
@@ -205,9 +209,8 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 10,
-    width: "45%",
+    width: "100%",
     alignItems: "center",
-    alignSelf: "center",
   },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   pagination: {
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
   },
   activeDot: {
-    color: "#000",
+    color: "#fff",
     fontSize: 34,
   },
 });
