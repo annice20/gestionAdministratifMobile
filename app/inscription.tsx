@@ -13,6 +13,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from "axios";
+import { router, useRouter } from 'expo-router';
 
 const image = require("../assets/images/1.png");
 
@@ -189,7 +190,7 @@ export default function Inscription() {
                     style={styles.buttonBlue}
                     onPress={() => Alert.alert("OK", "Aller à l'étape suivante")}
                   >
-                    <Text style={styles.buttonText}>Suivant</Text>
+                    <Text style={styles.buttonText} onPress={() => router.navigate('/validation')}>Suivant</Text>
                   </TouchableOpacity>
                 )}
               </View>
