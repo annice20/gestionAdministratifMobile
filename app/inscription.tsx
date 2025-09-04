@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   formContainer: {
-    width: "70%",
+    width: "80%",
     backgroundColor: "#696664ff",
     borderRadius: 10,
     padding: 20,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 10,
-    width: "35%",
+    width: "45%",
     alignItems: "center",
   },
   buttonGreen: {
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 10,
-    width: "35%",
+    width: "45%",
     alignItems: "center",
     alignSelf: "center",
   },
