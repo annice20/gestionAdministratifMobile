@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   formContainer: {
-    width: "70%",
+    width: "98%",
     backgroundColor: "#4A4A4A", // fond plus sombre comme sur ton image
     borderRadius: 10,
     padding: 20,
