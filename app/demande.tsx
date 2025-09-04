@@ -78,11 +78,37 @@ const ServicesList = () => {
     });
   };
 
-  const handleSubmit = () => {
-    // Traiter la soumission du formulaire ici
-    Alert.alert('Succès', 'Votre demande a été créée avec succès');
-    // Réinitialiser le formulaire si nécessaire
-  };
+ const handleSubmit = async () => {
+  try {
+    const response = await fetch('http://TON_SERVEUR_SYMFONY/api/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      Alert.alert('Succès', `Votre demande a été créée avec l'ID ${result.request_id}`);
+      setFormData({
+        ref: '',
+        demandeur: '',
+        type: '',
+        centre: '',
+        statut: '',
+        priorite: '',
+        canal: '',
+        montant: ''
+      });
+    } else {
+      Alert.alert('Erreur', result.message || 'Une erreur est survenue');
+    }
+  } catch (error) {
+    console.error(error);
+    Alert.alert('Erreur', 'Impossible de contacter le serveur');
+  }
+};
+
 
   const renderServiceRow = (service) => (
     <View key={service.id} style={styles.tableRow}>
@@ -247,7 +273,8 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 16
+    marginBottom: 16,
+    padding: 20,
   },
   headerText: {
     fontSize: 20,
