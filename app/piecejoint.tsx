@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import React, { useState } from "react";
 import {
   View,
@@ -9,6 +10,7 @@ import {
   Switch,
   ViewStyle,
   Dimensions,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as DocumentPicker from "expo-document-picker";
@@ -26,6 +28,7 @@ const PieceJointeScreen = () => {
   const [url, setUrl] = useState("");
   const [taille, setTaille] = useState("");
   const [verifStatut, setVerifStatut] = useState(false);
+  const [requestId, setRequestId] = useState("123"); // Remplace par la vraie valeur dynamique
 
   // Choisir un fichier
   const pickFile = async () => {
@@ -37,17 +40,54 @@ const PieceJointeScreen = () => {
     }
   };
 
-  const handleSubmit = () => {
-    console.log({
-      typePiece,
-      file,
-      nomFichier,
-      hash,
-      url,
-      taille,
-      verifStatut,
-    });
-    alert("Formulaire soumis avec succès !");
+  // Soumettre le formulaire + upload fichier
+  const handleSubmit = async () => {
+    if (!file || !typePiece) {
+      Alert.alert("Erreur", "Veuillez sélectionner un type et un fichier.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("typePiece", typePiece);
+    formData.append("nomFichier", nomFichier);
+    formData.append("hash", hash);
+    formData.append("url", url);
+    formData.append("taille", taille);
+    formData.append("verifStatut", verifStatut.toString());
+
+    const uri = file.assets[0].uri;
+    const filename = file.assets[0].name;
+    const filetype = file.assets[0].mimeType;
+
+    formData.append("file", {
+      uri,
+      name: filename,
+      type: filetype,
+    } as any);
+
+    try {
+      const response = await fetch(
+        `http://192.168.1.10:8000/api/piece-jointe/upload/ ${requestId}`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'upload");
+      }
+
+      const data = await response.json();
+      Alert.alert("Succès", "Pièce jointe enregistrée ✅");
+      console.log("Réponse du serveur :", data);
+    } catch (error) {
+      console.error("Erreur upload :", error);
+      Alert.alert("Erreur", "Échec de l'upload du fichier.");
+    }
   };
 
   return (
