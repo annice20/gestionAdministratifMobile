@@ -6,20 +6,33 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import axios from "axios";
 
 const image = require("../assets/images/1.png");
 
 export default function Inscription() {
-  const [role, setRole] = useState("administration");
+  // === États pour chaque champ ===
+  const [email, setEmail] = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [password, setPassword] = useState("");
+  const [langue, setLangue] = useState("");
+  const [role, setRole] = useState("citoyen");
+  const [nom, setNom] = useState("");
+  const [prenoms, setPrenoms] = useState("");
+  const [nin, setNin] = useState("");
+  const [adresse, setAdresse] = useState("");
+  const [commune, setCommune] = useState("");
   const [date, setDate] = useState<Date | null>(null);
+
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [step, setStep] = useState(1); // étape active
-  const [isRegistered, setIsRegistered] = useState(false); // après inscription
+  const [step, setStep] = useState(1);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const showDatePicker = () => setDatePickerVisible(true);
   const hideDatePicker = () => setDatePickerVisible(false);
@@ -29,12 +42,36 @@ export default function Inscription() {
     hideDatePicker();
   };
 
-  const formattedDate = date ? date.toLocaleDateString("fr-FR") : "";
+  const formattedDate = date ? date.toISOString().split("T")[0] : ""; // format YYYY-MM-DD
 
-  const handleRegister = () => {
-    // Ici tu peux mettre ton API d'inscription
-    alert("Inscription envoyée !");
-    setIsRegistered(true); // après inscription, on affiche "Suivant"
+  // === Fonction inscription API ===
+  const handleRegister = async () => {
+    if (!email || !password || !telephone || !langue || !nom) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs requis.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://192.168.1.10:8000/api/register", {
+        email,
+        password,
+        telephone,
+        langue,
+        role,
+        nom,
+        prenoms,
+        dateDeNaissance: formattedDate,
+        nin,
+        adresse,
+        commune,
+      });
+
+      Alert.alert("Succès", response.data.message);
+      setIsRegistered(true);
+    } catch (error: any) {
+      console.log(error.response?.data || error.message);
+      Alert.alert("Erreur", error.response?.data?.error || "Inscription échouée");
+    }
   };
 
   return (
@@ -45,20 +82,33 @@ export default function Inscription() {
             <Text style={styles.title}>Inscription</Text>
 
             {step === 1 ? (
-              // ==== ETAPE 1 ====
               <View style={styles.inputGroup}>
-                <TextInput style={styles.input} placeholder="Entrer votre e-mail" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Entrer votre e-mail"
+                  value={email}
+                  onChangeText={setEmail}
+                />
                 <TextInput
                   style={styles.input}
                   placeholder="Entrer votre numéro de téléphone"
                   keyboardType="phone-pad"
+                  value={telephone}
+                  onChangeText={setTelephone}
                 />
                 <TextInput
                   style={styles.input}
                   placeholder="Entrer le mot de passe"
                   secureTextEntry={true}
+                  value={password}
+                  onChangeText={setPassword}
                 />
-                <TextInput style={styles.input} placeholder="Choisir une langue" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Choisir une langue"
+                  value={langue}
+                  onChangeText={setLangue}
+                />
 
                 <View style={styles.pickerContainer}>
                   <Picker
@@ -72,10 +122,19 @@ export default function Inscription() {
                 </View>
               </View>
             ) : (
-              // ==== ETAPE 2 ====
               <View style={styles.inputGroup}>
-                <TextInput style={styles.input} placeholder="Nom" />
-                <TextInput style={styles.input} placeholder="Prénom" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nom"
+                  value={nom}
+                  onChangeText={setNom}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Prénom"
+                  value={prenoms}
+                  onChangeText={setPrenoms}
+                />
 
                 <View style={styles.inputWithIcon}>
                   <TextInput
@@ -83,7 +142,6 @@ export default function Inscription() {
                     placeholder="jj / mm / aaaa"
                     value={formattedDate}
                     editable={false}
-                    pointerEvents="none"
                   />
                   <TouchableOpacity onPress={showDatePicker}>
                     <Ionicons
@@ -103,20 +161,33 @@ export default function Inscription() {
                   maximumDate={new Date()}
                 />
 
-                <TextInput style={styles.input} placeholder="NIN" />
-                <TextInput style={styles.input} placeholder="Adresse" />
-                <TextInput style={styles.input} placeholder="Commune" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="NIN"
+                  value={nin}
+                  onChangeText={setNin}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Adresse"
+                  value={adresse}
+                  onChangeText={setAdresse}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Commune"
+                  value={commune}
+                  onChangeText={setCommune}
+                />
 
-                {/* Bouton S'inscrire */}
                 <TouchableOpacity style={styles.buttonGreen} onPress={handleRegister}>
                   <Text style={styles.buttonText}>S'inscrire</Text>
                 </TouchableOpacity>
 
-                {/* Bouton Suivant (apparaît après inscription) */}
                 {isRegistered && (
                   <TouchableOpacity
                     style={styles.buttonBlue}
-                    onPress={() => alert("Aller à l'étape suivante")}
+                    onPress={() => Alert.alert("OK", "Aller à l'étape suivante")}
                   >
                     <Text style={styles.buttonText}>Suivant</Text>
                   </TouchableOpacity>
@@ -124,7 +195,6 @@ export default function Inscription() {
               </View>
             )}
 
-            {/* --- Indicateurs (pagination avec points cliquables) --- */}
             <View style={styles.pagination}>
               <TouchableOpacity onPress={() => setStep(1)}>
                 <Text style={[styles.dot, step === 1 && styles.activeDot]}>•</Text>
@@ -140,6 +210,7 @@ export default function Inscription() {
   );
 }
 
+// Styles identiques à ton code précédent
 const styles = StyleSheet.create({
   fullScreen: { flex: 1 },
   background: { flex: 1, width: "100%", height: "100%", resizeMode: "cover" },
@@ -151,7 +222,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: "98%",
-    backgroundColor: "#4A4A4A", // fond plus sombre comme sur ton image
+    backgroundColor: "#4A4A4A",
     borderRadius: 10,
     padding: 20,
   },
@@ -194,7 +265,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: "100%",
-    paddingVertical: 10, // espace interne pour bien afficher le texte
+    paddingVertical: 10,
   },
   buttonBlue: {
     backgroundColor: "#4E74B0",
