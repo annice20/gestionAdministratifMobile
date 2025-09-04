@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 10,
-    width: "25%",
+    width: "35%",
     alignItems: "center",
   },
   buttonGreen: {
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     marginTop: 10,
-    width: "25%",
+    width: "35%",
     alignItems: "center",
     alignSelf: "center",
   },
