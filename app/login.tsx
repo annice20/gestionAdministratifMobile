@@ -21,7 +21,7 @@ export default function Login() {
   const login = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.post('http://192.168.88.72:8081/api/login', { email, password });
+      const { data } = await axios.post('http://192.168.88.94:8081/api/login', { email, password });
       await AsyncStorage.setItem('token', data.token);
       await AsyncStorage.setItem('user_id', data.user_id.toString());
       router.push("/accueil");
