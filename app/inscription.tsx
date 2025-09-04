@@ -282,6 +282,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: "100%",
     alignItems: "center",
+    
   },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   pagination: {
