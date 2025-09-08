@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import React, { useState } from "react";
 import {
   View,
@@ -14,8 +13,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 import { Picker } from "@react-native-picker/picker";
-
 import MyNavBar from "../components/MyNavBar";
 
 const image = require("../assets/images/1.png");
@@ -28,15 +27,16 @@ const PieceJointeScreen = () => {
   const [url, setUrl] = useState("");
   const [taille, setTaille] = useState("");
   const [verifStatut, setVerifStatut] = useState(false);
-  const [requestId, setRequestId] = useState("123"); // Remplace par la vraie valeur dynamique
+  const [requestId] = useState("123"); // Remplace par ta vraie valeur dynamique
 
   // Choisir un fichier
   const pickFile = async () => {
     const result = await DocumentPicker.getDocumentAsync({});
     if (!result.canceled) {
+      const asset = result.assets[0];
       setFile(result);
-      setNomFichier(result.assets[0].name);
-      setTaille(result.assets[0].size ? result.assets[0].size.toString() : "");
+      setNomFichier(asset.name);
+      setTaille(asset.size ? asset.size.toString() : "");
     }
   };
 
@@ -47,6 +47,15 @@ const PieceJointeScreen = () => {
       return;
     }
 
+    const asset = file.assets[0];
+    const uri = asset.uri;
+    const fileName = asset.name;
+    const fileType = asset.mimeType;
+
+    // ✅ Copie locale pour éviter content://
+    const cacheUri = FileSystem.cacheDirectory + fileName;
+    await FileSystem.copyAsync({ from: uri, to: cacheUri });
+
     const formData = new FormData();
     formData.append("typePiece", typePiece);
     formData.append("nomFichier", nomFichier);
@@ -54,50 +63,39 @@ const PieceJointeScreen = () => {
     formData.append("url", url);
     formData.append("taille", taille);
     formData.append("verifStatut", verifStatut.toString());
-
-    const uri = file.assets[0].uri;
-    const filename = file.assets[0].name;
-    const filetype = file.assets[0].mimeType;
-
     formData.append("file", {
-      uri,
-      name: filename,
-      type: filetype,
+      uri: cacheUri,
+      name: fileName,
+      type: fileType,
     } as any);
 
     try {
       const response = await fetch(
-        `http://192.168.1.10:8000/api/piece-jointe/upload/ ${requestId}`,
+        `http://192.168.88.65:8000/api/piece-jointe/upload/${requestId}`, // ✅ IP corrigée et espace supprimé
         {
           method: "POST",
           body: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
         }
       );
 
       if (!response.ok) {
-        throw new Error("Erreur lors de l'upload");
+        const text = await response.text();
+        throw new Error(`Erreur serveur : ${response.status} - ${text}`);
       }
 
       const data = await response.json();
       Alert.alert("Succès", "Pièce jointe enregistrée ✅");
       console.log("Réponse du serveur :", data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur upload :", error);
-      Alert.alert("Erreur", "Échec de l'upload du fichier.");
+      Alert.alert("Erreur", error.message || "Échec de l'upload du fichier.");
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <MyNavBar />
-      <ImageBackground
-        source={image}
-        resizeMode="cover"
-        style={styles.background}
-      >
+      <ImageBackground source={image} resizeMode="cover" style={styles.background}>
         <View style={styles.container}>
           <Text style={styles.title}>Pièce jointe</Text>
 
@@ -106,13 +104,10 @@ const PieceJointeScreen = () => {
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={typePiece}
-              onValueChange={(itemValue) => setTypePiece(itemValue)}
+              onValueChange={setTypePiece}
               style={styles.picker}
             >
-              <Picker.Item
-                label="-- Sélectionner un type de pièce --"
-                value=""
-              />
+              <Picker.Item label="-- Sélectionner un type de pièce --" value="" />
               <Picker.Item label="Acte de naissance" value="NAISSANCE" />
               <Picker.Item label="Acte de décès" value="DECES" />
               <Picker.Item label="Acte de mariage" value="MARIAGE" />
@@ -177,7 +172,7 @@ const PieceJointeScreen = () => {
           {/* Lien paiement */}
           <TouchableOpacity
             style={styles.paymentLink}
-            onPress={() => alert("Redirection vers le paiement")}
+            onPress={() => Alert.alert("Paiement", "Redirection vers le paiement")}
           >
             <Text style={styles.paymentText}>Effectuer le paiement</Text>
           </TouchableOpacity>
@@ -197,7 +192,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   container: {
-    backgroundColor: "rgba(0, 0, 0.5, 0.6)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     margin: 20,
     borderRadius: 10,
     padding: 20,
@@ -207,13 +202,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 15,
-    color: "#2c3e50",
+    color: "#fff",
   },
   label: {
     fontWeight: "600",
     marginTop: 10,
     marginBottom: 5,
-    color: "#ecf0f1",
+    color: "#fff",
   },
   pickerWrapper: {
     borderWidth: 1,
