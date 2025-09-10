@@ -2,7 +2,9 @@ import { useRouter } from 'expo-router';
 import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+
 const image = require("../assets/images/1.png");
+
 
 export default function Index() {
   const router = useRouter();
