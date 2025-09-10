@@ -1,14 +1,14 @@
 import { Picker } from '@react-native-picker/picker'; // Import du composant Picker
 import React, { useState } from 'react';
 import {
-    Alert,
-    Dimensions,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 const ServicesList = () => {
@@ -22,7 +22,7 @@ const ServicesList = () => {
     canal: '',
     montant: ''
   });
-
+  
   // Données pour les sélecteurs
   const statutChoices = [
     { label: 'Sélectionnez un statut', value: '' },
@@ -111,6 +111,7 @@ const ServicesList = () => {
 
 
   const renderServiceRow = (service) => (
+    
     <View key={service.id} style={styles.tableRow}>
       <View style={[styles.tableCell, { flex: 1 }]}>
         <Text style={styles.primaryText}>{service.nom}</Text>
