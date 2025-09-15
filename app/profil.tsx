@@ -9,66 +9,66 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MyNavBar from "../components/MyNavBar";
-import { UserContext } from "./UserContext";
+import { UserContext } from "./UserContext"; // Importez le contexte
 
 const image = require("../assets/images/1.png");
 
 export default function Profil() {
-
   const userContext = useContext(UserContext);
 
   if (!userContext) {
-    throw new Error("UserContext must be used within a UserContextProvider");
+    throw new Error("UserContext must be used within a UserProvider");
   }
 
   const { userData } = userContext;
 
+  const formattedDateOfBirth = userData?.dateDeNaissance
+    ? new Date(userData.dateDeNaissance).toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : "";
+
   return (
     <SafeAreaView style={styles.fullScreen}>
       <ImageBackground source={image} style={styles.background}>
-      <MyNavBar />
-      <View style={styles.content}>
-        {/* ETAT CIVIL DE BASE */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>ETAT CIVIL DE BASE</Text>
-          <Text style={styles.label}>Nom :</Text>
-          <Text style={styles.val}>{userData.nom}</Text>
-          <Text style={styles.label}>Prénom :</Text>
-          <Text style={styles.val}>{userData.prenoms}</Text>
-          <Text style={styles.label}>Date et lieu de naissance :</Text>
-          <Text style={styles.val}>{userData.dateDeNaissance}</Text>
-          <Text style={styles.label}>Nationalité :</Text>
-          <Text style={styles.val}>{userData.nationalite || ""}</Text>
+        <MyNavBar />
+        <View style={styles.content}>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>ETAT CIVIL DE BASE</Text>
+            <Text style={styles.label}>Nom :</Text>
+            <Text style={styles.val}>{userData.nom}</Text>
+            <Text style={styles.label}>Prénom :</Text>
+            <Text style={styles.val}>{userData.prenoms}</Text>
+            <Text style={styles.label}>Date de naissance :</Text>
+            <Text style={styles.val}>{formattedDateOfBirth}</Text>
+            <Text style={styles.label}>Nationalité :</Text>
+            <Text style={styles.val}>{userData.nationalite || "Non renseignée"}</Text>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>COORDONNEES</Text>
+            <Text style={styles.label}>Adresse :</Text>
+            <Text style={styles.val}>{userData.adresse}</Text>
+            <Text style={styles.label}>Numéro de téléphone :</Text>
+            <Text style={styles.val}>{userData.telephone}</Text>
+            <Text style={styles.label}>Email :</Text>
+            <Text style={styles.val}>{userData.email}</Text>
+            <Text style={styles.label}>Langue :</Text>
+            <Text style={styles.val}>{userData.langue}</Text>
+          </View>
         </View>
-
-        {/* COORDONNEES */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>COORDONNEES</Text>
-          <Text style={styles.label}>Nom :</Text>
-          <Text style={styles.val}>{userData.nom}</Text>
-          <Text style={styles.label}>Adresse :</Text>
-          <Text style={styles.val}>{userData.adresse}</Text>
-          <Text style={styles.label}>Numéro de téléphone :</Text>
-          <Text style={styles.val}>{userData.telephone}</Text>
-          <Text style={styles.label}>Email :</Text>
-          <Text style={styles.val}>{userData.email}</Text>
-          <Text style={styles.label}>Langue :</Text>
-          <Text style={styles.val}>{userData.langue}</Text>
+        <View style={styles.contactChannel}>
+          <Text style={styles.channelTitle}>CANAL DE CONTACT :</Text>
+          <View style={styles.channelRow}>
+            <Text>Contactez nous sur :</Text>
+            <TouchableOpacity onPress={() => Linking.openURL("mailto:E-taratasy@gmail.com")}>
+              <Text style={styles.email}>E-taratasy@gmail.com</Text>
+            </TouchableOpacity>
+            <Text>ou par:</Text>
+            <Text style={styles.sms}>SMS vers 037 45 264 11</Text>
+          </View>
         </View>
-      </View>
-
-      {/* CANAL DE CONTACT */}
-      <View style={styles.contactChannel}>
-        <Text style={styles.channelTitle}>CANAL DE CONTACT :</Text>
-        <View style={styles.channelRow}>
-          <Text>Contactez nous sur :</Text>
-          <TouchableOpacity onPress={() => Linking.openURL('mailto:E-taratasy@gmail.com')}>
-            <Text style={styles.email}>E-taratasy@gmail.com</Text>
-          </TouchableOpacity>
-          <Text>ou par:</Text>
-          <Text style={styles.sms}>SMS vers 037 45 264 11</Text>
-        </View>
-      </View>
       </ImageBackground>
     </SafeAreaView>
   );
@@ -77,7 +77,6 @@ export default function Profil() {
 const styles = StyleSheet.create({
   fullScreen: { flex: 1 },
   background: { flex: 1, width: "100%", height: "100%", resizeMode: "cover" },
-  
   menuItem: {
     color: "#222",
     fontWeight: "bold",
