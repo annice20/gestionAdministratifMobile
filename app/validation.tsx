@@ -1,12 +1,12 @@
+import React, { useRef, useState } from "react";
 import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState, useRef } from "react";
 
 const image = require("../assets/images/1.png");
 
 export default function VerificationScreen() {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const inputs = useRef<Array<TextInput | null>>([]);
+  const inputs = useRef<(TextInput | null)[]>([]);
 
   const handleChange = (value: string, index: number) => {
     const newCode = [...code];
@@ -14,7 +14,9 @@ export default function VerificationScreen() {
     setCode(newCode);
 
     if (value && index < 5) {
-      inputs.current[index + 1].focus();
+      if (inputs.current[index + 1]) {
+        inputs.current[index + 1]?.focus();
+      }
     }
   };
 
@@ -69,7 +71,7 @@ const handleSubmit = async () => {
               {code.map((digit, index) => (
                 <TextInput
                   key={index}
-                  ref={(ref) => inputs.current[index] = ref}
+                  ref={ref => { inputs.current[index] = ref; }}
                   style={styles.input}
                   maxLength={1}
                   keyboardType="number-pad"
