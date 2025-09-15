@@ -1,17 +1,15 @@
 import React, { useContext } from "react";
 import {
   ImageBackground,
+  Linking,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
-  Alert,
-  Linking,
 } from "react-native";
-import MyNavBar from "../components/MyNavBar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { UserContext, UserContextType } from "./UserContext";
+import MyNavBar from "../components/MyNavBar";
+import { UserContext } from "./UserContext";
 
 const image = require("../assets/images/1.png");
 
