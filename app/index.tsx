@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     width: 160,
   },
 
-  textbtn: {
+  textbtn: {                                                                                                                                                                                                                                                                                                                                                      
     color: "white",
   }
 });
