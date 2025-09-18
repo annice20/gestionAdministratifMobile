@@ -71,7 +71,7 @@ const ServicesList = () => {
     }
   ];
 
-  const handleInputChange = (name, value) => {
+  const handleInputChange = (name: keyof typeof formData, value: string) => {
     setFormData({
       ...formData,
       [name]: value
@@ -110,7 +110,14 @@ const ServicesList = () => {
 };
 
 
-  const renderServiceRow = (service) => (
+  type ServiceType = {
+    id: number;
+    nom: string;
+    pieces: string[];
+    delais: string;
+  };
+
+  const renderServiceRow = (service: ServiceType) => (
     
     <View key={service.id} style={styles.tableRow}>
       <View style={[styles.tableCell, { flex: 1 }]}>

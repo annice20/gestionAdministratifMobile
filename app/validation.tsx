@@ -1,6 +1,6 @@
-import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useRef, useState, useContext } from "react";
+import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState, useRef, useContext } from "react";
 import { UserContext } from "./UserContext";
 
 const image = require("../assets/images/1.png");
@@ -10,9 +10,12 @@ const API_BASE_URL = "http://10.0.2.2:5000/api"; // ⚠️ Ajuster selon l'envir
 export default function VerificationScreen() {
   const { userData } = useContext(UserContext);
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const inputs = useRef<Array<TextInput | null>>([]);
+  const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const inputs = useRef<(TextInput | null)[]>([]);
 
   const handleChange = (value: string, index: number) => {
+    if (isNaN(Number(value))) return; // Only allow numbers
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
@@ -24,9 +27,34 @@ export default function VerificationScreen() {
     }
   };
 
-  const handleResend = () => {
-    alert("Code renvoyé !");
-    // Ici, ajouter la logique pour renvoyer le code via API si nécessaire
+  const handleResend = async () => {
+    if (!userData?.email) {
+      alert("Email non disponible !");
+      return;
+    }
+    setResendLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/resend-code`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userData.email,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert("Code renvoyé avec succès !");
+      } else {
+        alert("Erreur lors du renvoi : " + data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Erreur de connexion au serveur !");
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -35,31 +63,30 @@ export default function VerificationScreen() {
       alert("Veuillez entrer le code complet !");
       return;
     }
-
+    setLoading(true);
     try {
-      // Envoi au backend
       const response = await fetch(`${API_BASE_URL}/verify-code`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: userData.email, // Utilise l'email depuis le contexte
+          email: userData.email,
           code: finalCode,
         }),
       });
-
       const data = await response.json();
-
       if (data.success) {
         alert("✅ Code correct !");
-        // Ici tu peux rediriger l’utilisateur vers une autre page
+        // Rediriger vers la page suivante, e.g., navigation.navigate('Home')
       } else {
         alert("❌ " + data.message);
       }
     } catch (error) {
       console.error(error);
       alert("⚠️ Erreur de connexion au serveur !");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,7 +104,7 @@ export default function VerificationScreen() {
               {code.map((digit, index) => (
                 <TextInput
                   key={index}
-                  ref={(ref) => { inputs.current[index] = ref; }}
+                  ref={ref => { inputs.current[index] = ref }}
                   style={styles.input}
                   maxLength={1}
                   keyboardType="number-pad"
@@ -87,14 +114,14 @@ export default function VerificationScreen() {
               ))}
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Envoyer</Text>
+            <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Envoyer</Text>}
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleResend}>
+            <TouchableOpacity onPress={handleResend} disabled={resendLoading}>
               <Text style={styles.resendText}>
                 Vous n’avez pas encore reçu le code ?{" "}
-                <Text style={styles.resendLink}>Renvoyer</Text>
+                {resendLoading ? <ActivityIndicator size="small" color="#1a00d6" /> : <Text style={styles.resendLink}>Renvoyer</Text>}
               </Text>
             </TouchableOpacity>
           </View>
