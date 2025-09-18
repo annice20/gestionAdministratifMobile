@@ -1,0 +1,6 @@
+- [x] Add TypeScript interfaces for Request, Attachment, and Props
+- [x] Update component to use typed Props
+- [x] Change statut display from {request.statut} to {statut}
+- [x] Update radio condition for "Aucun" to statut === ''
+- [x] Import Linking from 'react-native'
+- [x] Implement onPress for non-image attachments using Linking.openURL

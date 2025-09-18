@@ -1,10 +1,14 @@
 import { ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
+import { UserContext } from "./UserContext";
 
 const image = require("../assets/images/1.png");
 
+const API_BASE_URL = "http://10.0.2.2:5000/api"; // ⚠️ Ajuster selon l'environnement (10.0.2.2 pour Android Emulator)
+
 export default function VerificationScreen() {
+  const { userData } = useContext(UserContext);
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputs = useRef<Array<TextInput | null>>([]);
 
@@ -14,46 +18,50 @@ export default function VerificationScreen() {
     setCode(newCode);
 
     if (value && index < 5) {
-      inputs.current[index + 1].focus();
+      inputs.current[index + 1]?.focus();
+    } else if (!value && index > 0) {
+      inputs.current[index - 1]?.focus();
     }
   };
 
-const handleSubmit = async () => {
-  const finalCode = code.join("");
-  if (finalCode.length < 6) {
-    alert("Veuillez entrer le code complet !");
-    return;
-  }
+  const handleResend = () => {
+    alert("Code renvoyé !");
+    // Ici, ajouter la logique pour renvoyer le code via API si nécessaire
+  };
 
-  try {
-    // Envoi au backend
-    const response = await fetch("http://10.0.2.2:5000/api/verify-code", {
-      // ⚠️ Sur Android Emulator, localhost = 10.0.2.2
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: "test@example.com", // 👉 même email que dans ta base MySQL
-        code: finalCode,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert("✅ Code correct !");
-      // Ici tu peux rediriger l’utilisateur vers une autre page
-    } else {
-      alert("❌ " + data.message);
+  const handleSubmit = async () => {
+    const finalCode = code.join("");
+    if (finalCode.length < 6) {
+      alert("Veuillez entrer le code complet !");
+      return;
     }
-  } catch (error) {
-    console.error(error);
-    alert("⚠️ Erreur de connexion au serveur !");
-  }
-};
 
+    try {
+      // Envoi au backend
+      const response = await fetch(`${API_BASE_URL}/verify-code`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userData.email, // Utilise l'email depuis le contexte
+          code: finalCode,
+        }),
+      });
 
+      const data = await response.json();
+
+      if (data.success) {
+        alert("✅ Code correct !");
+        // Ici tu peux rediriger l’utilisateur vers une autre page
+      } else {
+        alert("❌ " + data.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("⚠️ Erreur de connexion au serveur !");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.fullScreen}>
@@ -69,7 +77,7 @@ const handleSubmit = async () => {
               {code.map((digit, index) => (
                 <TextInput
                   key={index}
-                  ref={(ref) => inputs.current[index] = ref}
+                  ref={(ref) => { inputs.current[index] = ref; }}
                   style={styles.input}
                   maxLength={1}
                   keyboardType="number-pad"
@@ -83,10 +91,12 @@ const handleSubmit = async () => {
               <Text style={styles.buttonText}>Envoyer</Text>
             </TouchableOpacity>
 
-            <Text style={styles.resendText}>
-              Vous n’avez pas encore reçu le code ?{" "}
-              <Text style={styles.resendLink}>Renvoyer</Text>
-            </Text>
+            <TouchableOpacity onPress={handleResend}>
+              <Text style={styles.resendText}>
+                Vous n’avez pas encore reçu le code ?{" "}
+                <Text style={styles.resendLink}>Renvoyer</Text>
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ImageBackground>
@@ -110,7 +120,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   card: {
-    backgroundColor: "#d6c3c3",
+    backgroundColor: "grey",
     borderRadius: 15,
     padding: 25,
     alignItems: "center",
