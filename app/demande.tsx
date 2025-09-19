@@ -1,15 +1,10 @@
 import { Picker } from '@react-native-picker/picker'; // Import du composant Picker
 import React, { useState } from 'react';
-import {
-  Alert,
-  Dimensions,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Alert, Dimensions, ImageBackground, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import MyNavBar from "../components/MyNavBar";
+
+const image = require("../assets/images/1.png");
 
 const ServicesList = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +17,7 @@ const ServicesList = () => {
     canal: '',
     montant: ''
   });
-  
+
   // Données pour les sélecteurs
   const statutChoices = [
     { label: 'Sélectionnez un statut', value: '' },
@@ -30,8 +25,7 @@ const ServicesList = () => {
     { label: 'En cours', value: 'en_cours' },
     { label: 'Traité', value: 'traite' },
   ];
-  
-  
+
   const prioriteChoices = [
     { label: 'Sélectionnez une priorité', value: '' },
     { label: 'Normale', value: '0' },
@@ -78,37 +72,36 @@ const ServicesList = () => {
     });
   };
 
- const handleSubmit = async () => {
-  try {
-    const response = await fetch('http://TON_SERVEUR_SYMFONY/api/requests', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      Alert.alert('Succès', `Votre demande a été créée avec l'ID ${result.request_id}`);
-      setFormData({
-        ref: '',
-        demandeur: '',
-        type: '',
-        centre: '',
-        statut: '',
-        priorite: '',
-        canal: '',
-        montant: ''
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch('http://TON_SERVEUR_SYMFONY/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
-    } else {
-      Alert.alert('Erreur', result.message || 'Une erreur est survenue');
-    }
-  } catch (error) {
-    console.error(error);
-    Alert.alert('Erreur', 'Impossible de contacter le serveur');
-  }
-};
 
+      const result = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Succès', `Votre demande a été créée avec l'ID ${result.request_id}`);
+        setFormData({
+          ref: '',
+          demandeur: '',
+          type: '',
+          centre: '',
+          statut: '',
+          priorite: '',
+          canal: '',
+          montant: ''
+        });
+      } else {
+        Alert.alert('Erreur', result.message || 'Une erreur est survenue');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erreur', 'Impossible de contacter le serveur');
+    }
+  };
 
   type ServiceType = {
     id: number;
@@ -118,7 +111,6 @@ const ServicesList = () => {
   };
 
   const renderServiceRow = (service: ServiceType) => (
-    
     <View key={service.id} style={styles.tableRow}>
       <View style={[styles.tableCell, { flex: 1 }]}>
         <Text style={styles.primaryText}>{service.nom}</Text>
@@ -135,150 +127,164 @@ const ServicesList = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>LISTE DES SERVICES</Text>
-      </View>
-      
-      <View style={styles.table}>
-        <View style={styles.tableHeader}>
-          <View style={[styles.tableHeaderCell, { flex: 1 }]}>
-            <Text style={styles.tableHeaderText}>Lequel</Text>
+    <SafeAreaView style={styles.fullScreen}>
+      <ImageBackground source={image} style={styles.background}>
+         <MyNavBar />
+        <ScrollView style={styles.container}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>LISTE DES SERVICES</Text>
           </View>
-          <View style={[styles.tableHeaderCell, { flex: 2 }]}>
-            <Text style={styles.tableHeaderText}>Pièces requises</Text>
-          </View>
-          <View style={[styles.tableHeaderCell, { flex: 1 }]}>
-            <Text style={styles.tableHeaderText}>Délais</Text>
-          </View>
-        </View>
-        
-        {servicesData.map(service => renderServiceRow(service))}
-      </View>
 
-      <View style={styles.demandeHeader}>
-        <Text style={styles.headerText}>DEMANDE</Text>
-      </View>
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <View style={[styles.tableHeaderCell, { flex: 1 }]}>
+                <Text style={styles.tableHeaderText}>Lequel</Text>
+              </View>
+              <View style={[styles.tableHeaderCell, { flex: 2 }]}>
+                <Text style={styles.tableHeaderText}>Pièces requises</Text>
+              </View>
+              <View style={[styles.tableHeaderCell, { flex: 1 }]}>
+                <Text style={styles.tableHeaderText}>Délais</Text>
+              </View>
+            </View>
 
-      <View style={styles.card}>
-        <View style={styles.formRow}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Référence</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.ref}
-              onChangeText={(text) => handleInputChange('ref', text)}
-              placeholder="Référence"
-            />
+            {servicesData.map(service => renderServiceRow(service))}
           </View>
-          
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Demandeur</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.demandeur}
-              onChangeText={(text) => handleInputChange('demandeur', text)}
-              placeholder="Demandeur"
-            />
-          </View>
-        </View>
 
-        <View style={styles.formRow}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Type de demande</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.type}
-              onChangeText={(text) => handleInputChange('type', text)}
-              placeholder="Type"
-            />
+          <View style={styles.demandeHeader}>
+            <Text style={styles.headerText}>DEMANDE</Text>
           </View>
-          
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Centre</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.centre}
-              onChangeText={(text) => handleInputChange('centre', text)}
-              placeholder="Centre"
-            />
-          </View>
-        </View>
 
-        <View style={styles.formRow}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Statut</Text>
-            <Picker
-              selectedValue={formData.statut}
-              onValueChange={(itemValue) => handleInputChange('statut', itemValue)}
-              style={styles.picker}
-            >
-              {statutChoices.map((choice, index) => (
-                <Picker.Item key={index} label={choice.label} value={choice.value} />
-              ))}
-            </Picker>
-          </View>
-          
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Priorité</Text>
-            <Picker
-              selectedValue={formData.priorite}
-              onValueChange={(itemValue) => handleInputChange('priorite', itemValue)}
-              style={styles.picker}
-            >
-              {prioriteChoices.map((choice, index) => (
-                <Picker.Item key={index} label={choice.label} value={choice.value} />
-              ))}
-            </Picker>
-          </View>
-          
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Canal</Text>
-            <Picker
-              selectedValue={formData.canal}
-              onValueChange={(itemValue) => handleInputChange('canal', itemValue)}
-              style={styles.picker}
-            >
-              {canalChoices.map((choice, index) => (
-                <Picker.Item key={index} label={choice.label} value={choice.value} />
-              ))}
-            </Picker>
-          </View>
-        </View>
+          <View style={styles.card}>
+            <View style={styles.formRow}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Référence</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.ref}
+                  onChangeText={(text) => handleInputChange('ref', text)}
+                  placeholder="Référence"
+                />
+              </View>
 
-        <View style={styles.formRow}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Montant</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.montant}
-              onChangeText={(text) => handleInputChange('montant', text)}
-              placeholder="Montant"
-              keyboardType="numeric"
-            />
-          </View>
-        </View>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Demandeur</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.demandeur}
+                  onChangeText={(text) => handleInputChange('demandeur', text)}
+                  placeholder="Demandeur"
+                />
+              </View>
+            </View>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Créer la demande</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.secondaryButton}>
-            <Text style={styles.buttonText}>Annuler</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+            <View style={styles.formRow}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Type de demande</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.type}
+                  onChangeText={(text) => handleInputChange('type', text)}
+                  placeholder="Type"
+                />
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Centre</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.centre}
+                  onChangeText={(text) => handleInputChange('centre', text)}
+                  placeholder="Centre"
+                />
+              </View>
+            </View>
+
+            <View style={styles.formRow}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Statut</Text>
+                <Picker
+                  selectedValue={formData.statut}
+                  onValueChange={(itemValue) => handleInputChange('statut', itemValue)}
+                  style={styles.picker}
+                >
+                  {statutChoices.map((choice, index) => (
+                    <Picker.Item key={index} label={choice.label} value={choice.value} />
+                  ))}
+                </Picker>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Priorité</Text>
+                <Picker
+                  selectedValue={formData.priorite}
+                  onValueChange={(itemValue) => handleInputChange('priorite', itemValue)}
+                  style={styles.picker}
+                >
+                  {prioriteChoices.map((choice, index) => (
+                    <Picker.Item key={index} label={choice.label} value={choice.value} />
+                  ))}
+                </Picker>
+              </View>
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Canal</Text>
+                <Picker
+                  selectedValue={formData.canal}
+                  onValueChange={(itemValue) => handleInputChange('canal', itemValue)}
+                  style={styles.picker}
+                >
+                  {canalChoices.map((choice, index) => (
+                    <Picker.Item key={index} label={choice.label} value={choice.value} />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+
+            <View style={styles.formRow}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Montant</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.montant}
+                  onChangeText={(text) => handleInputChange('montant', text)}
+                  placeholder="Montant"
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.primaryButton} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Créer la demande</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.secondaryButton}>
+                <Text style={styles.buttonText}>Annuler</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  fullScreen: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f8f9fa'
   },
+  container: {
+    marginTop: 0,
+  },
+
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  
   header: {
     alignItems: 'center',
     marginBottom: 16,
