@@ -8,24 +8,29 @@ const image = require("../assets/images/1.png");
 
 export default function Index() {
   const router = useRouter();
-  return (
-    <SafeAreaView style={styles.fullScreen}>
-      <ImageBackground source={image} style={styles.background}>
-        <View style={styles.container}>
-          <Text style={styles.intro}>Bienvenue dans la communauté !
-          {"\n"}Nous sommes ravis de vous partager une facilité quotidienne</Text>
-          <Text style={styles.intro}>Rejoignez-nous !</Text>
-          <TouchableOpacity style={styles.inscription}>
-            <Text style={styles.textbtn} onPress={() => router.navigate('/inscription')}>S’inscrire</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.connexion}>
-            <Text style={styles.textbtn} onPress={() => router.navigate('/login')}>Se connecter</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
-    </SafeAreaView>
-  );
+  try {
+    return (
+      <SafeAreaView style={styles.fullScreen}>
+        <ImageBackground source={image} style={styles.background}>
+          <View style={styles.container}>
+            <Text style={styles.intro}>Bienvenue dans la communauté !{"\n"}Nous sommes ravis de vous partager une facilité quotidienne</Text>
+            <Text style={styles.intro}>Rejoignez-nous !</Text>
+            <TouchableOpacity style={styles.inscription}>
+              <Text style={styles.textbtn} onPress={() => router.navigate('/inscription')}>S’inscrire</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.connexion}>
+              <Text style={styles.textbtn} onPress={() => router.navigate('/login')}>Se connecter</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      </SafeAreaView>
+    );
+  } catch (error) {
+    console.error("Erreur de rendu Index:", error);
+    return <Text>Erreur de rendu, veuillez réessayer plus tard</Text>;
+  }
 }
+
 
 const styles = StyleSheet.create({
   fullScreen: {

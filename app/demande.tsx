@@ -202,19 +202,6 @@ const ServicesList = () => {
 
             <View style={styles.formRow}>
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Statut</Text>
-                <Picker
-                  selectedValue={formData.statut}
-                  onValueChange={(itemValue) => handleInputChange('statut', itemValue)}
-                  style={styles.picker}
-                >
-                  {statutChoices.map((choice, index) => (
-                    <Picker.Item key={index} label={choice.label} value={choice.value} />
-                  ))}
-                </Picker>
-              </View>
-
-              <View style={styles.inputContainer}>
                 <Text style={styles.label}>Priorité</Text>
                 <Picker
                   selectedValue={formData.priorite}
